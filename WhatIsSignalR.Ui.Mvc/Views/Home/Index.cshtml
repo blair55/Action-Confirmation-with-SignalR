@@ -1,0 +1,67 @@
+﻿@using WhatIsSignalR.Ui.Mvc.Actions
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        var actionHub = $.connection.actionHub;
+
+        var $actions = $("#actions");
+
+        actionHub.alertExecutedAction = function (name) {
+            $actions.find("#" + name).removeClass().addClass("executed");
+        };
+
+        actionHub.alertExecutingAction = function (name) {
+            $actions.find("#" + name).removeClass().addClass("executing");
+        };
+
+        actionHub.alertActionException = function (name, msg) {
+            $actions.find("#" + name).append("<span class='error'>" + msg + "</span>");
+        };
+
+        $("#execute").click(function () {
+            $(this).attr("disabled", "disabled");
+            actionHub.executeActions();
+        });
+
+        $("#reset").click(function () {
+            $("#execute").removeAttr("disabled");
+            $actions.find("li").removeClass();
+            $actions.find(".error").remove();
+        });
+
+        $.connection.hub.start(function () {
+            // connection established
+            $("#execute").removeAttr("disabled");
+        });
+    });
+</script>
+
+<style>
+
+    #actions{padding:20px;}
+    #actions li{padding:10px 0;list-style:none;margin:0;}
+    #actions li .state{display:inline-block;width:20px;height:20px;margin-bottom:-5px;background-color:#faa;}
+    #actions li .error{display:inline-block;padding:0 5px;background-color:#aaf;}
+    #actions li.executing .state{background-color:#ffa;}
+    #actions li.executed .state{background-color:#afa;}
+
+</style>
+
+<h1>Action Executer</h1>
+
+<ul id="actions">
+@foreach(var action in (IEnumerable<IAction>)ViewBag.Actions)
+{
+    <li id="@action.GetType().Name">
+        <span class="state"></span>
+        <span>@action.GetType().Name</span>
+    </li>
+}
+</ul>
+
+<input type="submit" id="execute" value="execute" disabled="disabled" />
+<input type="reset" id="reset" value="reset" />
