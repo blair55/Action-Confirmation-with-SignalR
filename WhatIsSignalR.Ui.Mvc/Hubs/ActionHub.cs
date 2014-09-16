@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using SignalR.Hubs;
 using WhatIsSignalR.Ui.Mvc.Actions;
 using WhatIsSignalR.Ui.Mvc.Delegates;
+using Microsoft.AspNet.SignalR;
 
 namespace WhatIsSignalR.Ui.Mvc.Hubs
 {
@@ -20,12 +20,12 @@ namespace WhatIsSignalR.Ui.Mvc.Hubs
 
         void Executioner_ActionExecuting(ActionExecutedEventArgs args)
         {
-            Caller.alertExecutingAction(args.ActionTypeName);
+            Clients.Caller.alertExecutingAction(args.ActionTypeName);
         }
 
         void Executioner_ActionExecuted(ActionExecutedEventArgs args)
         {
-            Caller.alertExecutedAction(args.ActionTypeName);
+            Clients.Caller.alertExecutedAction(args.ActionTypeName);
         }
 
         public void ExecuteActions()
@@ -36,7 +36,7 @@ namespace WhatIsSignalR.Ui.Mvc.Hubs
             }
             catch (Exception ex)
             {
-                Caller.alertActionException(ex.Data["Name"], ex.Message);
+                Clients.Caller.alertActionException(ex.Data["Name"], ex.Message);
             }
         }
     }
